@@ -36,18 +36,18 @@ def main():
     batch_size = 2048
     data = np.zeros((batch_size, max_point_num, 6))
     data_num = np.zeros((batch_size), dtype=np.int32)
-    label = np.zeros((batch_size), dtype=np.int32)
-    label_seg = np.zeros((batch_size, max_point_num), dtype=np.int32)
+    # label = np.zeros((batch_size), dtype=np.int32)
+    # label_seg = np.zeros((batch_size, max_point_num), dtype=np.int32)
     indices_split_to_full = np.zeros((batch_size, max_point_num, 2), dtype=np.int32)
 
-    datasets = ['train', 'val']
+    datasets = ['test']
     for dataset_idx, dataset in enumerate(datasets):
         filename = os.path.abspath(os.path.join(root, 'scannet_%s.pickle' % dataset))
 
         print('{}-Loading {}...'.format(datetime.now(), filename))
         file_pickle = open(filename, 'rb')
         xyz_all = pickle.load(file_pickle, encoding='latin1')
-        labels_all = pickle.load(file_pickle, encoding='latin1')
+        # labels_all = pickle.load(file_pickle, encoding='latin1')
         file_pickle.close()
 
         offsets = [('zero', 0.0), ('half', args.block_size / 2)]
@@ -66,7 +66,7 @@ def main():
                 xyz_center[0][-1] = xyz_min[0][-1]
                 xyz = xyz - xyz_center
 
-                labels = labels_all[room_idx]
+                # labels = labels_all[room_idx]
                 print('{}-Computing block id of {} points...'.format(datetime.now(), xyz.shape[0]))
                 xyz_min = np.amin(xyz, axis=0, keepdims=True) - offset
                 xyz_max = np.amax(xyz, axis=0, keepdims=True)
@@ -125,8 +125,8 @@ def main():
                     if point_indices.shape[0] == 0:
                         continue
                     block_points = xyz[point_indices]
-                    block_points_feature = feature[point_indices]
 
+                    block_points_feature = feature[point_indices]
                     block_min = np.amin(block_points, axis=0, keepdims=True)
                     xyz_grids = np.floor((block_points - block_min) / args.grid_size).astype(np.int)
                     grids, point_grid_indices, grid_point_counts = np.unique(xyz_grids, return_inverse=True,
@@ -158,11 +158,9 @@ def main():
                     starts = [0] + list(np.cumsum(point_nums))
 
                     np.random.shuffle(point_indices)
-                    
                     block_points = xyz[point_indices]
                     block_points_feature = feature[point_indices]
-
-                    block_labels = labels[point_indices]
+                    # block_labels = labels[point_indices]
                     x, y, z = np.split(block_points, (1, 2), axis=-1)
                     r, g, b = np.split(block_points_feature, (1, 2), axis = -1)
                     block_xzy_feature = np.concatenate([x, z, y, r, g, b], axis=-1)
@@ -174,8 +172,8 @@ def main():
                         idx_in_batch = idx % batch_size
                         data[idx_in_batch, 0:point_num, ...] = block_xzy_feature[start:end, :]
                         data_num[idx_in_batch] = point_num
-                        label[idx_in_batch] = dataset_idx  # won't be used...
-                        label_seg[idx_in_batch, 0:point_num] = block_labels[start:end]
+                        # label[idx_in_batch] = dataset_idx  # won't be used...
+                        # label_seg[idx_in_batch, 0:point_num] = block_labels[start:end]
 
                         ind_in_room = point_indices[start:end]
                         indices_split_to_full[idx_in_batch, 0:point_num] = np.stack([np.zeros_like(ind_in_room) + room_idx ,ind_in_room], -1)
@@ -193,18 +191,18 @@ def main():
                             file = h5py.File(filename_h5, 'w')
                             file.create_dataset('data', data=data[0:item_num, ...])
                             file.create_dataset('data_num', data=data_num[0:item_num, ...])
-                            file.create_dataset('label', data=label[0:item_num, ...])
-                            file.create_dataset('label_seg', data=label_seg[0:item_num, ...])
+                            # file.create_dataset('label', data=label[0:item_num, ...])
+                            # file.create_dataset('label_seg', data=label_seg[0:item_num, ...])
                             file.create_dataset('indices_split_to_full', data=indices_split_to_full[0:item_num, ...])
                             file.close()
 
-                            if args.save_ply:
-                                print('{}-Saving ply of {}...'.format(datetime.now(), filename_h5))
-                                filepath_label_ply = os.path.join(root, dataset, 'ply_label',
-                                                                  'label_%s_%d' % (offset_name, idx_h5))
-                                data_utils.save_ply_property_batch(data[0:item_num, :, 0:3],
-                                                                   label_seg[0:item_num, ...],
-                                                                   filepath_label_ply, data_num[0:item_num, ...], 22)
+                            # if args.save_ply:
+                            #     print('{}-Saving ply of {}...'.format(datetime.now(), filename_h5))
+                            #     filepath_label_ply = os.path.join(root, dataset, 'ply_label',
+                            #                                       'label_%s_%d' % (offset_name, idx_h5))
+                            #     data_utils.save_ply_property_batch(data[0:item_num, :, 0:3],
+                            #                                        label_seg[0:item_num, ...],
+                            #                                        filepath_label_ply, data_num[0:item_num, ...], 22)
 
                             idx_h5 = idx_h5 + 1
                         idx = idx + 1

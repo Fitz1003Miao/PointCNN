@@ -43,6 +43,14 @@ def main():
             for repeat_idx in range(args.repeat_num):
                 filelist.write('./filelists/train_files_g_%d.txt\n' % (list_idx))
 
+    val_h5 = ['./val/%s\n' % (filename) for filename in os.listdir(os.path.join(root, 'val'))
+               if filename.endswith('.h5')]
+    val_list = os.path.join(root, 'val_files.txt')
+    print('{}-Saving {}...'.format(datetime.now(), val_list))
+    with open(val_list, 'w') as filelist:
+        for filename_h5 in val_h5:
+            filelist.write(filename_h5)
+
     test_h5 = ['./test/%s\n' % (filename) for filename in os.listdir(os.path.join(root, 'test'))
                if filename.endswith('.h5')]
     test_list = os.path.join(root, 'test_files.txt')
@@ -50,6 +58,7 @@ def main():
     with open(test_list, 'w') as filelist:
         for filename_h5 in test_h5:
             filelist.write(filename_h5)
+
 
 
 if __name__ == '__main__':
