@@ -191,7 +191,7 @@ Here we list the commands for training/evaluating PointCNN on classification and
   cd ../evaluation
   python3 scannet_v2_out.py -d ../../data/scannet-v2/out/test/ -p ../../data/scannet-v2/out/scannet_test.pickle -f ../../data/scannet-v2/benchmark/scannetv2_test.txt -o ../../data/scannet-v2/out/test_label/
   ```
-  [eval code](https://github.com/ScanNet/ScanNet/blob/master/BenchmarkScripts/3d_evaluation/evaluate_semantic_label.py)
+  [ScanNet Eval Code](https://github.com/ScanNet/ScanNet/blob/master/BenchmarkScripts/3d_evaluation/evaluate_semantic_label.py)
 
   * #### Semantic3D
   ```
