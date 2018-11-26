@@ -83,28 +83,15 @@ Here we list the commands for training/evaluating PointCNN on classification and
   |_ benchmark
 
   ```
-  # PointCNN root floder
-  mv ./scannet-benchmark/* ../data/scannet-v2/benchmark/
-  python3 ./data_conversions/pickle_scannet_v2_seg_data.py -f ../data/scannet-v2/data/ -b ../data/scannet-v2/benchmark -o ../data/scannet-v2/out/ -r
-  
-  python3 ./data_conversions/prepare_scannet_seg_data.py -f ../data/scannet-v2/out/
-  python3 ./data_conversions/prepare_scannet_seg_test_data.py -f ../data/scannet-v2/out/
+  cd ../data/scannet/scannet_dataset_download/
+  mv ./scannet_labelmap/scannet-labels.combined.tsv ../benchmark/
 
-  python3 ./data_conversions/prepare_scannet_seg_filelists.py -f ../data/scannet-v2/out/
-
-  cd pointcnn_seg
-  ./train_val_scannet-v2.sh -g 0 -x scannet_v2_rgb_x8_2048_fps
-
-  # eval val
-  ./test_scannet-v2.sh -g 1 -x scannet_v2_rgb_x8_2048_fps -l ../../models/seg/pointcnn_seg_scannet_v2_rgb_x8_2048_k8_fps_xxxx/ckpts/iter-xxxxx -r 4
-  # eval test
-  ./test_scannet-benchmark.sh -g 2 -x scannet_v2_rgb_x8_2048_fps -l ../../models/seg/pointcnn_seg_scannet_v2_rgb_x8_2048_k8_fps_xxxx/ckpts/iter-xxxxx -r 4
-
-  # output benchmark .txt to test
-
-  cd ../evaluation
-  python3 scannet_v2_out.py -d ../../data/scannet-v2/out/test/ -p ../../data/scannet-v2/out/scannet_test.pickle -f ../../data/scannet-v2/benchmark/scannetv2_test.txt -o ../../data/scannet-v2/out/test_label/
-
+  #./pointcnn_root
+  cd ../../../pointcnn/data_conversions
+  python extract_scannet_objs.py -f ../../data/scannet/scannet_dataset_download/data/ -b ../../data/scannet/scannet_dataset_download/benchmark/ -o ../../data/scannet/cls/
+  python prepare_scannet_cls_data.py -f ../../data/scannet/cls/
+  cd ../pointcnn_cls/
+  ./train_val_scannet.sh -g 0 -x scannet_x3_l4
   ```
 
   * #### tu_berlin
@@ -185,14 +172,25 @@ Here we list the commands for training/evaluating PointCNN on classification and
   * #### ScanNet
   Please refer to [data_conversions](data_conversions/README.md) for downloading ScanNet, then:
   ```
-  cd data_conversions
-  python3 prepare_scannet_seg_data.py
-  python3 prepare_scannet_seg_filelists.py
-  cd ../pointcnn_seg
-  ./train_val_scannet.sh -g 0 -x scannet_x8_2048_k8_fps
-  ./test_scannet.sh -g 0 -x scannet_x8_2048_k8_fps -l ../../models/seg/pointcnn_seg_scannet_x8_2048_k8_fps_xxxx/ckpts/iter-xxxxx -r 4
+   # PointCNN root floder
+  mv ./scannet-benchmark/* ../data/scannet-v2/benchmark/
+  python3 ./data_conversions/pickle_scannet_v2_seg_data.py -f ../data/scannet-v2/data/ -b ../data/scannet-v2/benchmark -o ../data/scannet-v2/out/ -r
+  
+  python3 ./data_conversions/prepare_scannet_seg_data.py -f ../data/scannet-v2/out/
+  python3 ./data_conversions/prepare_scannet_seg_test_data.py -f ../data/scannet-v2/out/
+
+  python3 ./data_conversions/prepare_scannet_seg_filelists.py -f ../data/scannet-v2/out/
+
+  cd pointcnn_seg
+  ./train_val_scannet-v2.sh -g 0 -x scannet_v2_rgb_x8_2048_fps
+
+  ./test_scannet-v2.sh -g 1 -x scannet_v2_rgb_x8_2048_fps -l ../../models/seg/pointcnn_seg_scannet_v2_rgb_x8_2048_k8_fps_xxxx/ckpts/iter-xxxxx -r 4
+
+  ./test_scannet-benchmark.sh -g 2 -x scannet_v2_rgb_x8_2048_fps -l ../../models/seg/pointcnn_seg_scannet_v2_rgb_x8_2048_k8_fps_xxxx/ckpts/iter-xxxxx -r 4
+
   cd ../evaluation
-  python3 eval_scannet.py -d <path to *_pred.h5> -p <path to scannet_test.pickle>
+  python3 scannet_v2_out.py -d ../../data/scannet-v2/out/test/ -p ../../data/scannet-v2/out/scannet_test.pickle -f ../../data/scannet-v2/benchmark/scannetv2_test.txt -o ../../data/scannet-v2/out/test_label/
+
   ```
   * #### Semantic3D
   ```
