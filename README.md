@@ -170,7 +170,7 @@ Here we list the commands for training/evaluating PointCNN on classification and
   Please notice that these command just for Area 1 (specified by -a 1 option) validation. Results on other Areas can be computed by iterating -a option.
 
   * #### ScanNet
-  Please refer to [data_conversions](data_conversions/README.md) for downloading ScanNet, then:
+  Please refer to [ScanNet](https://github.com/ScanNet/ScanNet) for downloading ScanNet, then:
   ```
    # PointCNN root floder
   mv ./scannet-benchmark/* ../data/scannet-v2/benchmark/
